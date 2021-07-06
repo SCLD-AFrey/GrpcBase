@@ -1,0 +1,17 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "GrpcBase.Common";
+
+package common;
+
+service Broadcaster{
+  rpc RespondToRequest (BroadcastRequest) returns (BroadcastReply);
+}
+
+message BroadcastRequest{
+  string content = 1;
+}
+
+message BroadcastReply{
+  string content = 1;
+}
