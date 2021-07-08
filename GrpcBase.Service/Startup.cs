@@ -82,7 +82,7 @@ namespace GrpcBase.Service
         private static void GenerateCertificate()
         {
             EncryptionEngine encryptionEngine = new EncryptionEngine();
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "certData");
             var fileName = "scld.cert";
             var fileFull = Path.Combine(filePath, fileName);

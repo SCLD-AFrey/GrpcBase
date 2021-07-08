@@ -24,41 +24,45 @@ namespace GrpcBase.CLI
             //var client = new Broadcaster.BroadcasterClient(channel);
 
             EncryptionEngine engine = new EncryptionEngine();
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "certData");
-            var fileName = "scld.cert";
-            var fileFull = Path.Combine(filePath, fileName);
+            var fileFull = Path.Combine(filePath, "scld.cert");
             var secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
 
-            var cert = engine.LoadX509Certificate2FromFile(fileFull, secPass);
-            
-
-
-            
-            
-            
-            
-            var client = CreateClient(cert);
-            
-
-            await Authenticate();
-            
-            var input = System.Console.ReadLine();
-            
-            
-            while (input.ToLower() != "exit")
+            try
             {
+                var cert = engine.LoadX509Certificate2FromFile(fileFull, secPass);
+                var client = CreateClient(cert);
+                await Authenticate();
+            
+                var input = System.Console.ReadLine();
 
-                var request = new BroadcastRequest()
+                while (input.ToLower() != "exit")
                 {
-                    Content = input
-                };
-                var reply = await ProcessRequest(request, client);
-                
-                System.Console.WriteLine(reply);
 
-                input = System.Console.ReadLine();
+                    var request = new BroadcastRequest()
+                    {
+                        Content = input
+                    };
+                    var reply = await ProcessRequest(request, client);
+                
+                    System.Console.WriteLine(reply);
+
+                    input = System.Console.ReadLine();
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Certificate not found at {fileFull} [{e.Message}]");
+            }
+            
+
+
+            
+            
+            
+            
+
             
             
             
