@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Security.Claims;
-using DidiSoft.OpenSsl;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using GrpcBase.Service.Encryption;
 
 namespace GrpcBase.Service
 {
@@ -52,7 +49,6 @@ namespace GrpcBase.Service
                 app.UseDeveloperExceptionPage();
             }
 
-            GenerateCertificate();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -79,30 +75,6 @@ namespace GrpcBase.Service
             var token = new JwtSecurityToken("ExampleServer", "ExampleClients", claims, expires: DateTime.Now.AddSeconds(60), signingCredentials: credentials);
             return JwtTokenHandler.WriteToken(token);
         }
-        private static void GenerateCertificate()
-        {
-            EncryptionEngine encryptionEngine = new EncryptionEngine();
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "certData");
-            var fileName = "scld.cert";
-            var fileFull = Path.Combine(filePath, fileName);
-            var secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
-            var kp = encryptionEngine.GenerateNewAsymmetricRsaKeyPair(KeyLength.Length1024);
-            var cert = encryptionEngine.GenerateX509Certificate2FromRsaKeyPair(kp, "TestCert");
-            //var formattedCert = cert.Export(X509ContentType.Pkcs12, @"P@ssword");
-            
-            
-            
-            
-            if (!Directory.Exists(filePath))
-            {
-                Directory.CreateDirectory(filePath);
-            }
-            if (!File.Exists(fileFull))
-            {
-                encryptionEngine.SaveX509Certificate2ToFile(cert, fileFull, secPass);
-                //File.WriteAllBytes(fileFull, formattedCert);
-            }
-        }
+
     }
 }

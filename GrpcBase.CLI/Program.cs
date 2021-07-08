@@ -18,24 +18,32 @@ namespace GrpcBase.CLI
     {
         private const string Address = "localhost:5001";
         private static string _token;
+        
+        
+        private static EncryptionEngine encryptionEngine = new EncryptionEngine();
+        private static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "certData");
+        private static SecureString secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
+        private static X509Certificate2 ServerCert = new X509Certificate2();
+        
+        
         static async Task Main(string[] args)
         {
             //using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             //var client = new Broadcaster.BroadcasterClient(channel);
 
-            EncryptionEngine engine = new EncryptionEngine();
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "certData");
-            var fileFull = Path.Combine(filePath, "scld.cert");
-            var secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
-
             try
             {
-                var cert = engine.LoadX509Certificate2FromFile(fileFull, secPass);
+                var cert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.cert"), secPass);
                 var client = CreateClient(cert);
-                await Authenticate();
+                //await Authenticate();
             
-                var input = System.Console.ReadLine();
+                Console.WriteLine(await ProcessRequest(new BroadcastRequest()
+                {
+                    Content = "Hello"
+                }, client));
+
+                var input = Console.ReadLine();
 
                 while (input.ToLower() != "exit")
                 {
@@ -46,37 +54,35 @@ namespace GrpcBase.CLI
                     };
                     var reply = await ProcessRequest(request, client);
                 
-                    System.Console.WriteLine(reply);
+                    Console.WriteLine(reply);
 
-                    input = System.Console.ReadLine();
+                    input = Console.ReadLine();
                 }
+
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Certificate not found at {fileFull} [{e.Message}]");
+                Console.WriteLine($"ERROR: [{e.Message}]");
             }
-            
 
 
-            
-            
-            
-            
 
-            
-            
-            
+
+
+
+
         }
 
         private static Broadcaster.BroadcasterClient CreateClient(X509Certificate2 certificate)
         {
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(certificate);
+            var httpClient = new HttpClient(handler);
 
             // Create the gRPC channel
             var channel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
             {
-                HttpHandler = handler
+                HttpClient  = httpClient
             });
 
             return new Broadcaster.BroadcasterClient(channel);
