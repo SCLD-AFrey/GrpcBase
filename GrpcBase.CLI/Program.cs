@@ -29,33 +29,22 @@ namespace GrpcBase.CLI
         
         static async Task Main(string[] args)
         {
-            //using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            //var client = new Broadcaster.BroadcasterClient(channel);
-
             try
             {
                 var cert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.cert"), secPass);
                 var client = CreateClient(cert);
-                //await Authenticate();
-            
-                Console.WriteLine(await ProcessRequest(new BroadcastRequest()
-                {
-                    Content = "Hello"
-                }, client));
+                await Authenticate(cert);
 
                 var input = Console.ReadLine();
 
                 while (input.ToLower() != "exit")
                 {
-
                     var request = new BroadcastRequest()
                     {
                         Content = input
                     };
                     var reply = await ProcessRequest(request, client);
-                
                     Console.WriteLine(reply);
-
                     input = Console.ReadLine();
                 }
 
@@ -64,13 +53,11 @@ namespace GrpcBase.CLI
             {
                 Console.WriteLine($"ERROR: [{e.Message}]");
             }
-
-
-
-
-
-
-
+        }
+        
+        private static Task<BroadcastReply> ProcessRequest(BroadcastRequest request, Broadcaster.BroadcasterClient client)
+        {
+            return client.RespondToRequestAsync(request).ResponseAsync;
         }
 
         private static Broadcaster.BroadcasterClient CreateClient(X509Certificate2 certificate)
@@ -87,38 +74,13 @@ namespace GrpcBase.CLI
 
             return new Broadcaster.BroadcasterClient(channel);
         }
-        
-        private static Task<BroadcastReply> ProcessRequest(BroadcastRequest request, Broadcaster.BroadcasterClient client)
-        {
-            return client.RespondToRequestAsync(request).ResponseAsync;
-        }
-        
-        
 
-        private static GrpcChannel CreateAuthenticatedChannel(string address)
-        {
-            var credentials = CallCredentials.FromInterceptor((context, metadata) =>
-            {
-                if (!string.IsNullOrEmpty(_token))
-                {
-                    metadata.Add("Authorization", $"Bearer {_token}");
-                }
-                return Task.CompletedTask;
-            });
-
-            var channel = GrpcChannel.ForAddress(address, new GrpcChannelOptions
-            {
-                Credentials = ChannelCredentials.Create(new SslCredentials(), credentials)
-            });
-            return channel;
-        }
-        
-        
-
-        private static async Task<string> Authenticate()
+        private static async Task<string> Authenticate(X509Certificate2 p_certificate2)
         {
             Console.WriteLine($"Authenticating as {Environment.UserName}...");
-            var httpClient = new HttpClient();
+            var handler = new HttpClientHandler();
+            handler.ClientCertificates.Add(p_certificate2);
+            var httpClient = new HttpClient(handler);
             var request = new HttpRequestMessage
             {
                 RequestUri = new Uri($"https://{Address}/generateJwtToken?name={HttpUtility.UrlEncode(Environment.UserName)}"),
