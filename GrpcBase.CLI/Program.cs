@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web;
@@ -8,7 +9,8 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcBase.Common;
 using DidiSoft.OpenSsl;
-using PublicKey = DidiSoft.OpenSsl.PublicKey;
+using DidiSoft.OpenSsl.X509;
+using GrpcBase.CLI.Encryption;
 
 namespace GrpcBase.CLI
 {
@@ -21,13 +23,17 @@ namespace GrpcBase.CLI
             //using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             //var client = new Broadcaster.BroadcasterClient(channel);
 
+            EncryptionEngine engine = new EncryptionEngine();
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "certData");
+            var fileName = "scld.cert";
+            var fileFull = Path.Combine(filePath, fileName);
+            var secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
+
+            var cert = engine.LoadX509Certificate2FromFile(fileFull, secPass);
             
-            var certPem = File.ReadAllText(@"C:\Certs\key-public.pem");
-            
-            PublicKey publicKey = PublicKey.Load(@"C:\Certs\key-public.pem");
-            
-            X509Certificate2 cert = new X509Certificate2(certPem);
-            
+
+
             
             
             

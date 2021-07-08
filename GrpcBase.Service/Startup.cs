@@ -2,7 +2,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using DidiSoft.OpenSsl;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,13 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using PublicKey = DidiSoft.OpenSsl.PublicKey;
+using GrpcBase.Service.Encryption;
 
 namespace GrpcBase.Service
 {
     public class Startup
     {
-
         private readonly JwtSecurityTokenHandler JwtTokenHandler = new JwtSecurityTokenHandler();
         private readonly SymmetricSecurityKey SecurityKey = new SymmetricSecurityKey(Guid.NewGuid().ToByteArray());
         public void ConfigureServices(IServiceCollection services)
@@ -49,13 +47,12 @@ namespace GrpcBase.Service
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            GenerateCerts();
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            GenerateCertificate();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -82,31 +79,29 @@ namespace GrpcBase.Service
             var token = new JwtSecurityToken("ExampleServer", "ExampleClients", claims, expires: DateTime.Now.AddSeconds(60), signingCredentials: credentials);
             return JwtTokenHandler.WriteToken(token);
         }
-
-        private void GenerateCerts()
+        private static void GenerateCertificate()
         {
-            PrivateKey privateKey;
-            PublicKey publicKey;
+            EncryptionEngine encryptionEngine = new EncryptionEngine();
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "certData");
+            var fileName = "scld.cert";
+            var fileFull = Path.Combine(filePath, fileName);
+            var secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
+            var kp = encryptionEngine.GenerateNewAsymmetricRsaKeyPair(KeyLength.Length1024);
+            var cert = encryptionEngine.GenerateX509Certificate2FromRsaKeyPair(kp, "TestCert");
+            //var formattedCert = cert.Export(X509ContentType.Pkcs12, @"P@ssword");
             
-            string filePath = @"C:\Certs\";
-            string pubFileName = "key-public.pem";
-            string privFileName = "key-private.pem";
-
-            if (!File.Exists(filePath + pubFileName) || !File.Exists(filePath + privFileName))
+            
+            
+            
+            if (!Directory.Exists(filePath))
             {
-                KeyPair kp = KeyPair.GenerateKeyPair(KeyAlgorithm.Rsa, KeyLength.Length2048);
-                publicKey = kp.Public;
-                privateKey = kp.Private;
-                
-                publicKey.Save(filePath + pubFileName);
-                privateKey.Save(filePath + privFileName);
-                
-                
+                Directory.CreateDirectory(filePath);
             }
-            else
+            if (!File.Exists(fileFull))
             {
-                publicKey = PublicKey.Load(filePath + pubFileName);
-                privateKey = PrivateKey.Load(filePath + privFileName);
+                encryptionEngine.SaveX509Certificate2ToFile(cert, fileFull, secPass);
+                //File.WriteAllBytes(fileFull, formattedCert);
             }
         }
     }

@@ -15,4 +15,12 @@
         </Protobuf>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="DidiSoft.OpenSsl" Version="1.4.3.18" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\SteelCloudLLC\SteelCloudUtilities\SteelCloud.FilesAndFolders\SteelCloud.FilesAndFolders.csproj" />
+    </ItemGroup>
+
 </Project>

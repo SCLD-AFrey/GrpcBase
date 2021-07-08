@@ -19,4 +19,8 @@
         <Protobuf Include="..\GrpcBase.Common\Protos\common.proto" GrpcServices="Client" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\SteelCloudLLC\SteelCloudUtilities\SteelCloud.FilesAndFolders\SteelCloud.FilesAndFolders.csproj" />
+    </ItemGroup>
+
 </Project>
