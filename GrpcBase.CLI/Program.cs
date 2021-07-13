@@ -17,7 +17,7 @@ namespace GrpcBase.CLI
     class Program
     {
         private const string Address = "localhost:5001";
-        private static string _token;
+        private static string token;
         
         
         private static EncryptionEngine encryptionEngine = new EncryptionEngine();
@@ -64,15 +64,36 @@ namespace GrpcBase.CLI
         {
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(certificate);
+            
             var httpClient = new HttpClient(handler);
 
             // Create the gRPC channel
-            var channel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
-            {
-                HttpClient  = httpClient
-            });
+            // var channel = GrpcChannel.ForAddress($"https://{Address}", new GrpcChannelOptions
+            // {
+            //     HttpClient  = httpClient
+            // });
+
+            var channel = createAuthenticatedChannel($"https://{Address}", httpClient);
 
             return new Broadcaster.BroadcasterClient(channel);
+        }
+
+        private static GrpcChannel createAuthenticatedChannel(string p_address, HttpClient p_httpClient)
+        {
+            var credentials = CallCredentials.FromInterceptor((context, metadata) =>
+            {
+                if (!string.IsNullOrEmpty(token))
+                {
+                    metadata.Add("Authorization", $"Bearer {token}");
+                }
+                return Task.CompletedTask;
+            });
+            var channel = GrpcChannel.ForAddress(p_address, new GrpcChannelOptions
+            {
+                Credentials = ChannelCredentials.Create(new SslCredentials(), credentials),
+                HttpClient = p_httpClient
+            });
+            return channel;
         }
 
         private static async Task<string> Authenticate(X509Certificate2 p_certificate2)
@@ -81,16 +102,17 @@ namespace GrpcBase.CLI
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(p_certificate2);
             var httpClient = new HttpClient(handler);
+
             var request = new HttpRequestMessage
             {
-                RequestUri = new Uri($"https://{Address}/generateJwtToken?name={HttpUtility.UrlEncode(Environment.UserName)}"),
+                RequestUri = new Uri($"https://{Address}/generateJwtToken?name={HttpUtility.UrlEncode(Environment.UserName)}&role=client"),
                 Method = HttpMethod.Get,
                 Version = new Version(2, 0)
             };
             var tokenResponse = await httpClient.SendAsync(request);
             tokenResponse.EnsureSuccessStatusCode();
 
-            var token = await tokenResponse.Content.ReadAsStringAsync();
+            token = await tokenResponse.Content.ReadAsStringAsync();
             Console.WriteLine("Successfully authenticated.");
 
             return token;

@@ -15,3 +15,14 @@ message BroadcastRequest{
 message BroadcastReply{
   string content = 1;
 }
+
+service Authenticator{
+  rpc Authenticate (AuthRequest) returns (AuthReply);
+}
+message AuthRequest{
+  string content = 1;
+}
+
+message AuthReply{
+  string content = 1;
+}
