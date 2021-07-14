@@ -21,8 +21,9 @@ service Authenticator{
 }
 message AuthRequest{
   string content = 1;
+  string user = 2;
 }
 
 message AuthReply{
-  string content = 1;
+  string token = 1;
 }

@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GrpcBase.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GrpcBase.Service
 {
     public class BroadcastService : Broadcaster.BroadcasterBase
     {
+        [Authorize]
         public override Task<BroadcastReply> RespondToRequest(BroadcastRequest request, ServerCallContext context)
         {
             var user = context.GetHttpContext().User;

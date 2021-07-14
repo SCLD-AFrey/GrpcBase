@@ -17,23 +17,24 @@ namespace GrpcBase.CLI
     class Program
     {
         private const string Address = "localhost:5001";
-        private static string token;
+        private static string _token;
         
         
-        private static EncryptionEngine encryptionEngine = new EncryptionEngine();
-        private static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        private static EncryptionEngine _encryptionEngine = new EncryptionEngine();
+        private static string _filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "certData");
-        private static SecureString secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
-        private static X509Certificate2 ServerCert = new X509Certificate2();
+        private static SecureString _secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
+        private static X509Certificate2 _serverCert = new X509Certificate2();
         
         
-        static async Task Main(string[] args)
+        static async Task Main(string[] p_args)
         {
             try
             {
-                var cert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.cert"), secPass);
+                var cert = _encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(_filePath, "scld.cert"), _secPass);
+
+                _token = await Authenticate(cert);
                 var client = CreateClient(cert);
-                await Authenticate(cert);
 
                 var input = Console.ReadLine();
 
@@ -43,8 +44,15 @@ namespace GrpcBase.CLI
                     {
                         Content = input
                     };
-                    var reply = await ProcessRequest(request, client);
-                    Console.WriteLine(reply);
+                    try
+                    {
+                        var reply = await ProcessRequest(request, client);
+                        Console.WriteLine(reply);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"ERROR (ProcessRequest): [{e.Message}]");
+                    }
                     input = Console.ReadLine();
                 }
 
@@ -55,40 +63,37 @@ namespace GrpcBase.CLI
             }
         }
         
-        private static Task<BroadcastReply> ProcessRequest(BroadcastRequest request, Broadcaster.BroadcasterClient client)
+
+        private static Task<BroadcastReply> ProcessRequest(BroadcastRequest p_request, Broadcaster.BroadcasterClient p_client)
         {
-            return client.RespondToRequestAsync(request).ResponseAsync;
+            return p_client.RespondToRequestAsync(p_request).ResponseAsync;
         }
 
-        private static Broadcaster.BroadcasterClient CreateClient(X509Certificate2 certificate)
+        private static Broadcaster.BroadcasterClient CreateClient(X509Certificate2 p_certificate)
         {
             var handler = new HttpClientHandler();
-            handler.ClientCertificates.Add(certificate);
-            
+            handler.ClientCertificates.Add(p_certificate);
             var httpClient = new HttpClient(handler);
-
-            // Create the gRPC channel
-            // var channel = GrpcChannel.ForAddress($"https://{Address}", new GrpcChannelOptions
-            // {
-            //     HttpClient  = httpClient
-            // });
-
-            var channel = createAuthenticatedChannel($"https://{Address}", httpClient);
+            var channel = CreateAuthenticatedChannel(httpClient);
 
             return new Broadcaster.BroadcasterClient(channel);
         }
 
-        private static GrpcChannel createAuthenticatedChannel(string p_address, HttpClient p_httpClient)
+        private static GrpcChannel CreateAuthenticatedChannel(HttpClient p_httpClient)
         {
-            var credentials = CallCredentials.FromInterceptor((context, metadata) =>
+            var credentials = CallCredentials.FromInterceptor((p_context, p_metadata) =>
             {
-                if (!string.IsNullOrEmpty(token))
+                if (!string.IsNullOrEmpty(_token))
                 {
-                    metadata.Add("Authorization", $"Bearer {token}");
+                    p_metadata.Add("Authorization", $"Bearer {_token}");
+                }
+                else
+                {
+                    throw new Exception("TOKEN IS NULL OR EMPTY");
                 }
                 return Task.CompletedTask;
             });
-            var channel = GrpcChannel.ForAddress(p_address, new GrpcChannelOptions
+            var channel = GrpcChannel.ForAddress($"https://{Address}", new GrpcChannelOptions
             {
                 Credentials = ChannelCredentials.Create(new SslCredentials(), credentials),
                 HttpClient = p_httpClient
@@ -101,21 +106,20 @@ namespace GrpcBase.CLI
             Console.WriteLine($"Authenticating as {Environment.UserName}...");
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(p_certificate2);
-            var httpClient = new HttpClient(handler);
-
-            var request = new HttpRequestMessage
+            
+            using var client = new HttpClient(handler);
+ 
+            var tokenResponse = await client.SendAsync(new HttpRequestMessage
             {
-                RequestUri = new Uri($"https://{Address}/generateJwtToken?name={HttpUtility.UrlEncode(Environment.UserName)}&role=client"),
+                RequestUri = new Uri($"https://{Address}/generateJwtToken?name={HttpUtility.UrlEncode(Environment.UserName)}"),
                 Method = HttpMethod.Get,
-                Version = new Version(2, 0)
-            };
-            var tokenResponse = await httpClient.SendAsync(request);
+                Version = new Version(2, 0),
+            });
             tokenResponse.EnsureSuccessStatusCode();
-
-            token = await tokenResponse.Content.ReadAsStringAsync();
+            
             Console.WriteLine("Successfully authenticated.");
 
-            return token;
+            return await tokenResponse.Content.ReadAsStringAsync();;
         }
     }
 }

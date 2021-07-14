@@ -56,35 +56,28 @@ namespace GrpcBase.Service
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<BroadcastService>();
-                endpoints.MapGrpcService<AuthenticationService>();
                 
 
                 endpoints.MapGet("/generateJwtToken", context =>
                 {
                     return context.Response.WriteAsync(
                         GenerateJwtToken(
-                            context.Request.Query["name"], 
-                            context.Request.Query["role"]
+                            context.Request.Query["name"]
                             )
                         );
                 });
             });
         }
-        private string GenerateJwtToken(string p_name, string p_role)
+        private string GenerateJwtToken(string p_name)
         {
             if (string.IsNullOrEmpty(p_name))
             {
                 throw new InvalidOperationException("Name is not specified.");
             }
-            if (string.IsNullOrEmpty(p_role))
-            {
-                throw new InvalidOperationException("Role is not specified.");
-            }
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, p_name),
-                new Claim(ClaimTypes.Role, p_role)
+                new Claim(ClaimTypes.Name, p_name)
             };
             
             var credentials = new SigningCredentials(m_securityKey, SecurityAlgorithms.HmacSha256);
