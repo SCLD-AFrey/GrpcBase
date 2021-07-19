@@ -31,7 +31,7 @@ namespace GrpcBase.CLI
         {
             try
             {
-                var cert = _encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(_filePath, "scld.cert"), _secPass);
+                var cert = _encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(_filePath, "scld.crt"), _secPass);
 
                 _token = await Authenticate(cert);
                 var client = CreateClient(cert);

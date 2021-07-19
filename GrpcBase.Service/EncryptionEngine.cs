@@ -152,7 +152,7 @@ namespace GrpcBase.Service.Encryption
         /// </summary>
         /// <param name="p_certificate">The certificate to be stored.</param>
         /// <exception cref="CryptographicException"></exception>
-        private void StoreX509Certificate2InX509Store(X509Certificate2 p_certificate)
+        public void StoreX509Certificate2InX509Store(X509Certificate2 p_certificate)
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try

@@ -43,26 +43,36 @@ namespace GrpcBase.Service
                         });
                 });
 
+        private static void CreateCertStore()
+        {
+            X509Store store = new X509Store("MY",StoreLocation.CurrentUser);
+        }
+        
         private static void GenerateCertificate()
         {
             if (!Directory.Exists(filePath))
             {
                 Directory.CreateDirectory(filePath);
             }
-            if (!File.Exists(Path.Combine(filePath, "scld.cert")))
+            if (!File.Exists(Path.Combine(filePath, "scld.crt")))
             {
                 ServerCert = encryptionEngine.GenerateX509Certificate2FromRsaKeyPair(
-                    encryptionEngine.GenerateNewAsymmetricRsaKeyPair(KeyLength.Length1024),
+                    encryptionEngine.GenerateNewAsymmetricRsaKeyPair(
+                        KeyLength.Length1024),
                     "TestCert");
                 encryptionEngine.SaveX509Certificate2ToFile(
                     ServerCert, 
-                    Path.Combine(filePath, "scld.cert"), secPass);
-            }
+                    Path.Combine(filePath, "scld.crt"), secPass);
+            } 
             else
             {
-                ServerCert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.cert"), secPass);
+                ServerCert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.crt"), secPass);
             }
-            Console.WriteLine(Path.Combine(filePath, "scld.cert"));
+            
+            encryptionEngine.StoreX509Certificate2InX509Store(ServerCert);
+            
+            
+            Console.WriteLine(Path.Combine(filePath, "scld.crt"));
             
         }
     }

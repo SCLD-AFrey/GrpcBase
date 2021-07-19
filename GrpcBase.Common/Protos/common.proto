@@ -1,4 +1,5 @@
 ﻿syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "GrpcBase.Common";
 
@@ -14,6 +15,7 @@ message BroadcastRequest{
 
 message BroadcastReply{
   string content = 1;
+  google.protobuf.Timestamp At = 2;
 }
 
 service Authenticator{
