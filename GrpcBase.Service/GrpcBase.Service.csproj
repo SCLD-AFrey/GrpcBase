@@ -19,6 +19,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\SteelCloudLLC\SteelCloudUtilities\SteelCloud.FilesAndFolders\SteelCloud.FilesAndFolders.csproj" />
+        <ProjectReference Include="..\GrpcBase.Data\GrpcBase.Data.csproj" />
     </ItemGroup>
 
 </Project>

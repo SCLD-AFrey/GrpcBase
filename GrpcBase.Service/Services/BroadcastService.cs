@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using GrpcBase.Common;
@@ -14,9 +15,10 @@ namespace GrpcBase.Service
         {
             var user = context.GetHttpContext().User;
             var at = new Timestamp();
+
             return Task.FromResult(new BroadcastReply
             {
-                Content = $"You ({user.Identity.Name}) wrote {request.Content} at {at.ToDateTime().ToString("h:mm:ss tt")}",
+                Content = $"You {user.Identity.Name} wrote {request.Content} at {at.ToDateTime().ToString("h:mm:ss tt")}",
                 At = new Timestamp()
             });
         }

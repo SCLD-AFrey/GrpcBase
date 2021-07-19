@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcBase.Service", "GrpcBas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelCloud.FilesAndFolders", "..\..\SteelCloudLLC\SteelCloudUtilities\SteelCloud.FilesAndFolders\SteelCloud.FilesAndFolders.csproj", "{28681BDC-3E49-47B4-A7BA-A1BA3CA5EC1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcBase.Data", "GrpcBase.Data\GrpcBase.Data.csproj", "{5EFBB162-602D-47F8-997F-B3DE08B6386F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{28681BDC-3E49-47B4-A7BA-A1BA3CA5EC1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28681BDC-3E49-47B4-A7BA-A1BA3CA5EC1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28681BDC-3E49-47B4-A7BA-A1BA3CA5EC1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EFBB162-602D-47F8-997F-B3DE08B6386F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EFBB162-602D-47F8-997F-B3DE08B6386F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EFBB162-602D-47F8-997F-B3DE08B6386F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EFBB162-602D-47F8-997F-B3DE08B6386F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -61,34 +61,14 @@ namespace GrpcBase.Service
                 endpoints.MapGet("/generateJwtToken", context =>
                 {
                     return context.Response.WriteAsync(
-                        GenerateJwtToken(
-                            context.Request.Query["name"]
+                        TokenHandling.GenerateJwtToken(
+                            context.Request.Query["name"].ToString(), m_jwtTokenHandler, m_securityKey
                             )
                         );
                 });
             });
         }
-        private string GenerateJwtToken(string p_name)
-        {
-            if (string.IsNullOrEmpty(p_name))
-            {
-                throw new InvalidOperationException("Name is not specified.");
-            }
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, p_name)
-            };
-            
-            var credentials = new SigningCredentials(m_securityKey, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                "BroadcastServer", 
-                "ExampleClients", 
-                claims, 
-                expires: DateTime.Now.AddSeconds(60), 
-                signingCredentials: credentials);
-            return m_jwtTokenHandler.WriteToken(token);
-        }
 
     }
 }
