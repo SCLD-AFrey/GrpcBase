@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dataBaseObjectModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="55eeb4c3-754f-4629-9972-eb7f253a3ddd" namespace="GrpcBase.Data" dataBaseShemaInfo="H4sIAAAAAAAEAO1aW3ObOhB+70z/A8NTMlMMxmBDBrtT20nG05zEk0unbx0Bi6NTLHyQcJLz64+EgYAviWO7aXMcPyTWale7n7Qr6cM4n+/HoTSFmOKItOV6TZM/dz5+cLqIwhWLYjSCAQkiiWsRenRPcVu+ZWxypKp3d3e1u0Ytikeqrml19ftfZ1feLYyRgglliHggF1b+81Yy9ypJzjVyQ6DCZdrOJSVBLpLO0Rja8jFh8YNc9PHeYYzHKH74Cg+ZyvDrj5mWNKA3BP+TcBmLEyhbcbteFCZjQitCLqYsxmTUuRj0HTX7XjFTF+0c9TGGsniZB6ffnYml2b/rhwkPb0BYQ5ez+LlrETofLIubNwY+EIZZSXKehKGYl7YcoJByUb8rxpoNgQmTJXUNx1cpwtzzgEwSlouu8L9cVNe06tBkimLvFsUHvOdwPSd9xOAaj6Hi5lFYHt3nUpZK1xm4Om0Tbogpw95Z5P08wRD6G05KZdjT3iV4UbzpWKcJ9osIYzzCRKxueagkTVGcLnCAIV5v3G4UhYBIMaVUgAYRpduHACUh+4ZCkfkHB9rhYdWji5k8n/ZlI4nX/RFL3fBaPnIzV5000Ry1rDpXG3moleJYUjAD4sM9LFRGKs4Q4XzifyyU/MriSjuyos3Nl1bx8rBmCNIgnopsvf1ljRBX7TEvic5RF+fSOYliwCPCdxBaSiZHTTfSuX1VYOqkeLL+VFDoHJPUJlv6rFX09jEVgpuJqNsiPyrCQldUwsDvaNlHWfIn/zhqplwYZ9NRORdWinmHAJGlYjrLpXZF70l4SyCKdV6FcGuUpXXfBGhp994jwPk5sh+Qlxxy+wH8cTvfB7T5TWE/0OaXlzeOdpk0O1NfQHCGnJtF5FmGk6m9U5wXUpwTHFMmvu6S4FRdnKHde5inUP2L7jbEqRrw8DYicJ6MXUE+dhfzm6Eob4Bebs+iFveVlQWcdrwGjVpnE3tTPGoG6J1I/aEn9JpAizNiP+Dm59V+oOUn534ALZ3q+wH4f0Ij3p8E7MWTgN2wxe/DC/dv8Ji4Oj7LGSvK78zxhSwpHyCnSLpprKBIvGcj4viFUhi74cOmXjYmCfnoL8iQNa7l+ai/hDrsNNI/h0CUYb3TiOe37ichbg1zy5PqsQD2Am55+3rrkLc8ndOavaHi5r26hmfXjh2UMPJ81Ap8UBByPcUAs6VYyESKrSHd0/0gCKCx0xIWyNZa5aUQt1lkq67rEABS3EYK1bIVt8Wbnm24pt4ybbDMXef1ZRQCfX2oeoCCQANfCUALFMN3bQUFJigNu6mDoTU0vbm4qr8yn8U8vEo+24HtuqblK74AbTQsU3F9XVeshh/4ddcybK+503z+PblcB8OyNVGnhttUDKvlKVbTChTNaxiBaZimbtg7XeCs/ajiiFf+wB/GkZcKszuK8232fmCnD9Pj+0kMlNb6iKHaVNdq9U9S1t0WrVqzpn2SeknIkhjaBBIWo/CTNEzcEHv83nMd/QTSdi3Lr7dMw29pGhg2ctTcReqvFyJ+dlCxAJdJMbvOF5+HBgG+L+5OQnSVBBXRJYyjKcwrzqTzuj1E+b5M+P2ZjMSDgrQ9m5plMXAWFU0gZvg3x7YiDOcUCMQ8vXrReMwpEM1ydEFcUe4D5VdSiE8wT4U5i2pfapZTqS7coimO4k722wqvl/mejx8cde5F0s5/H6RLpnEqAAA=" generateConnectionHelper="true" generateStoredProcedures="false" fieldNameCase="Unchanged" generateDefaultConstructors="false" useNameOf="true" connectionStringName="SampleDataConn" createdInVersion="20.1.6.0" generateJsonSerializationContractResolver="false" generateServiceCollectionExtensions="true" lastModifiedInVersion="20.1.6.0" name="SampleData" xmlns="http://schemas.microsoft.com/dsltools/ORMDataModel">
+  <classes>
+    <dataBaseObjectModelHasClasses Id="8963be2f-746f-42e9-aeb3-f9f1808076a7">
+      <xpObject Id="acda7fde-aabc-4e57-8a5a-90a2c2dfffe3" name="User" baseClass="XPObject" userFileName="User" designerFileName="User.Designer" className="User" virtualName="User">
+        <fields>
+          <generalXpObjectHasFields Id="8171699d-9078-42c4-9eb4-e00565a8421d">
+            <field Id="8122efea-b3bc-4e89-b7ea-c94b52759e85" name="UserName" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
+          </generalXpObjectHasFields>
+        </fields>
+        <mMTarget>
+          <manyToManyRelationship Id="bb2b5090-514b-4b65-aca2-25fda39ab1f4" sourceCollectionName="Roles" name="RoleReferencesUser" targetCollectionName="Users">
+            <xpObjectMoniker Id="9f9bb58d-ddb9-4385-bd22-83dfd1b849c6" />
+          </manyToManyRelationship>
+        </mMTarget>
+        <collectionFields>
+          <xpObjectHasCollectionFields Id="a0ce08d5-03bf-46cc-922e-cdc06d829491">
+            <collectionField Id="35ab189f-5118-4c37-bb13-1b8c7f27b91b" name="Roles" />
+          </xpObjectHasCollectionFields>
+        </collectionFields>
+      </xpObject>
+    </dataBaseObjectModelHasClasses>
+    <dataBaseObjectModelHasClasses Id="4c7e7a47-5d50-44a1-b4ef-9127767b5780">
+      <xpObject Id="9f9bb58d-ddb9-4385-bd22-83dfd1b849c6" name="Role" baseClass="XPObject" userFileName="Role" designerFileName="Role.Designer" className="Role" virtualName="Role">
+        <fields>
+          <generalXpObjectHasFields Id="65fe40d1-5cd4-4396-9c54-52d9e3cab16e">
+            <field Id="1e48905a-94b6-487c-868f-0c34f5455249" name="Name" virtualColumnType="String" delayedUpdateModifiedOnly="false" />
+          </generalXpObjectHasFields>
+        </fields>
+        <collectionFields>
+          <xpObjectHasCollectionFields Id="fe5783d6-5b2c-4c06-80a0-0a94751458fe">
+            <collectionField Id="8e394941-7466-4f9b-9481-b0dc923f1285" name="Users" />
+          </xpObjectHasCollectionFields>
+        </collectionFields>
+      </xpObject>
+    </dataBaseObjectModelHasClasses>
+  </classes>
+</dataBaseObjectModel>
