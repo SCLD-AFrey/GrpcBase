@@ -18,14 +18,13 @@ message BroadcastReply{
   google.protobuf.Timestamp At = 2;
 }
 
-service Authenticator{
-  rpc Authenticate (AuthRequest) returns (AuthReply);
-}
-message AuthRequest{
-  string content = 1;
-  string user = 2;
+service AuthenticatorServiceRpc{
+  rpc AuthenticateUser(AuthRequest) returns (AuthReply);
 }
 
+message AuthRequest{
+  string username = 1;
+}
 message AuthReply{
   string token = 1;
 }

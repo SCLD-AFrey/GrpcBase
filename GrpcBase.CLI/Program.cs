@@ -27,15 +27,25 @@ namespace GrpcBase.CLI
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "certData"), 
                         "scld.crt"), 
                     EncryptionEngine.StringToSecureString(@"P@ssword"));
-                var bearerToken = await Utilities.GetBearerToken(cert, Address);
-                var client = Utilities.CreateClient(cert, bearerToken, Address);
+
+                Console.WriteLine("Authenticating...");
+
+                var authenticateClient = Utilities.CreateAuthenticatorClient(cert, Address);
+                var authReply = await ProcessAuthentication(new AuthRequest(){Username = Environment.UserName}, authenticateClient);
+                var bearerToken = authReply.Token;
+                
+                Console.WriteLine($"Authenticated as {authReply.Token}");
+                
+                //var bearerToken = await Utilities.GetBearerToken(cert, Address);
+                var broadcasterClient = Utilities.CreateBroadcasterClient(cert, bearerToken, Address);
+                
                 var input = Console.ReadLine();
 
                 while (input.ToLower() != "exit")
                 {
                     try
                     {
-                        var reply = await ProcessRequest(new BroadcastRequest() {Content = input}, client);
+                        var reply = await ProcessRequest(new BroadcastRequest() {Content = input}, broadcasterClient);
                         Console.WriteLine(reply);
                     }
                     catch (Exception e)
@@ -57,6 +67,13 @@ namespace GrpcBase.CLI
         {
             return p_client.RespondToRequestAsync(p_request).ResponseAsync;
         }
+
+        private static Task<AuthReply> ProcessAuthentication(AuthRequest p_request, AuthenticatorServiceRpc.AuthenticatorServiceRpcClient p_client)
+        {
+            return p_client.AuthenticateUserAsync(p_request).ResponseAsync;
+        }
+
+
 
 
     }

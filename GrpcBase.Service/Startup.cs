@@ -56,6 +56,7 @@ namespace GrpcBase.Service
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<BroadcastService>();
+                endpoints.MapGrpcService<AuthenticateService>();
                 
 
                 endpoints.MapGet("/generateJwtToken", context =>
