@@ -5,14 +5,15 @@ using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using DidiSoft.OpenSsl;
-using GrpcBase.Service.Encryption;
+using GrpcBase.Common;
+using GrpcBase.Common.Encryption;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+
 
 namespace GrpcBase.Service
 {
     public class Program
     {
-        private static EncryptionEngine encryptionEngine = new EncryptionEngine();
         private static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "certData");
         private static SecureString secPass = EncryptionEngine.StringToSecureString(@"P@ssword");
@@ -56,20 +57,20 @@ namespace GrpcBase.Service
             }
             if (!File.Exists(Path.Combine(filePath, "scld.crt")))
             {
-                ServerCert = encryptionEngine.GenerateX509Certificate2FromRsaKeyPair(
-                    encryptionEngine.GenerateNewAsymmetricRsaKeyPair(
+                ServerCert = GrpcBase.Common.Encryption.EncryptionEngine.GenerateX509Certificate2FromRsaKeyPair(
+                    EncryptionEngine.GenerateNewAsymmetricRsaKeyPair(
                         KeyLength.Length1024),
                     "TestCert");
-                encryptionEngine.SaveX509Certificate2ToFile(
+                EncryptionEngine.SaveX509Certificate2ToFile(
                     ServerCert, 
                     Path.Combine(filePath, "scld.crt"), secPass);
             } 
             else
             {
-                ServerCert = encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.crt"), secPass);
+                ServerCert = EncryptionEngine.LoadX509Certificate2FromFile(Path.Combine(filePath, "scld.crt"), secPass);
             }
             
-            encryptionEngine.StoreX509Certificate2InX509Store(ServerCert);
+            EncryptionEngine.StoreX509Certificate2InX509Store(ServerCert);
             
             
             Console.WriteLine(Path.Combine(filePath, "scld.crt"));

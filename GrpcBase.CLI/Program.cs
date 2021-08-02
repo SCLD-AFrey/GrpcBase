@@ -8,22 +8,21 @@ using System.Web;
 using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcBase.Common;
+using GrpcBase.Common.Encryption;
 using DidiSoft.OpenSsl;
 using DidiSoft.OpenSsl.X509;
-using GrpcBase.CLI.Encryption;
 
 namespace GrpcBase.CLI
 {
     class Program
     {
         private const string Address = "localhost:5001";
-        private static EncryptionEngine _encryptionEngine = new EncryptionEngine();
         
         static async Task Main(string[] p_args)
         {
             try
             {
-                var cert = _encryptionEngine.LoadX509Certificate2FromFile(Path.Combine(
+                var cert = EncryptionEngine.LoadX509Certificate2FromFile(Path.Combine(
                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "certData"), 
                         "scld.crt"), 
                     EncryptionEngine.StringToSecureString(@"P@ssword"));

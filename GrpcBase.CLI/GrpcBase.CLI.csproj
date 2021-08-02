@@ -21,6 +21,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\SteelCloudLLC\SteelCloudUtilities\SteelCloud.FilesAndFolders\SteelCloud.FilesAndFolders.csproj" />
+      <ProjectReference Include="..\GrpcBase.Common\GrpcBase.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="EncryptionEngine.cs" />
     </ItemGroup>
 
 </Project>
